@@ -50,13 +50,15 @@ var Ground = function(x,y) {
 	};
 };
 
-var Cub = function(x,y) {
+var Platform = function(x,y) {
 	this.x = x;
 	this.y = y;
-	this.w = 40;
+	this.w = 160;
 	this.h = 40;
 	this.draw = function() {
-		this.rect(this.x,this.y);
+		for(var i=0; i<4; i++) {
+			this.rect(this.x+(i*40),this.y);
+		}
 	};
 	this.rect = function(x,y) {
 		ctx.fillStyle = "#753304";
@@ -72,17 +74,41 @@ var Player = function(x,y) {
 	this.draw = function() {
 		ctx.fillStyle = "#6b6009";
 		ctx.fillRect(this.x, this.y, 30, 30);
+		ctx.fillStyle = "#127012";
+		ctx.fillRect(this.x+5, this.y+5, 20, 20);
 	};
 };
 
-for(var i=0; i<8; i++) {
-	ground.push(new Ground((i*400),320));
+var Enemy = function(x,y) {
+	this.x = x;
+	this.y = y;
+	this.dx = 2;
+	this.update = function() {
+		this.y += this.dx;
+		if(this.y+30 > 280) this.dx = -2;
+		if(this.y < 100) this.dx = 2;
+	};
+	this.draw = function() {
+		this.update();
+		ctx.fillStyle = "#3b1111";
+		ctx.fillRect(this.x, this.y, 30, 30);
+		ctx.fillStyle = "#7d6125";
+		ctx.fillRect(this.x+5, this.y+5, 20, 20);
+	};
+};
+
+for(var i=0; i<9; i++) {
+	ground.push(new Ground((i*560),320));
 }
 for(var i=1; i<12; i++) {
-	ground.push(new Cub((i*280),280));
+	ground.push(new Platform((i*400),220));
+	ground.push(new Enemy((i*400)-40,100+((i%2)*180)));
+}
+for(var i=1; i<12; i++) {
+	ground.push(new Platform((i*400)+200,130));
 }
 
-var player = new Player(200,290);
+var player = new Player(200,280);
 
 var placeFree = function(dx,dy) {
 	for(var i=0; i<ground.length; i++) {
@@ -119,8 +145,12 @@ var update = function() {
 
 
 	var sx = 0;
-	if(keyRight) sx -=1;
-	if(keyLeft)  sx +=1;
+	if(keyRight) {
+		sx -=1;
+	}
+	if(keyLeft)  {
+		sx +=1;
+	}
 	if(sx != 0) {
 		for(var i=0; i<walkSpeed; i++) {
 			if(placeFree(sx, 0)) {
