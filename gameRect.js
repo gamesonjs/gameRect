@@ -5,6 +5,7 @@ canvas.height = 400;
 canvas.style.background = '#60a3f0';
 
 var ground = [];
+var enemy = [];
 
 var walkSpeed = 2;
 var ySpeed = 0;
@@ -97,6 +98,33 @@ var Enemy = function(x,y) {
 	};
 };
 
+var Enemy2 = function(xCenter,y) {
+	this.x = 0;
+	this.y = y;
+	this.xStep = 2;
+	this.xCenter = xCenter;
+	this.xMove = 2;
+	this.update = function() {
+		this.x = this.xCenter+this.xStep;
+		if(this.x>this.xCenter+50) {
+				this.xMove = -1;
+		}
+		if(this.x<this.xCenter-50) {
+				this.xMove = 1;
+		}
+		this.xStep += this.xMove;
+		if(keyRight) this.xCenter-=1;
+		if(keyLeft) this.xCenter+=1;
+	};
+	this.draw = function() {
+		this.update();
+		ctx.fillStyle = "#3b1111";
+		ctx.fillRect(this.x, this.y, 30, 30);
+		ctx.fillStyle = "#7d6125";
+		ctx.fillRect(this.x+5, this.y+5, 20, 20);
+	};
+};
+
 for(var i=0; i<9; i++) {
 	ground.push(new Ground((i*560),320));
 }
@@ -106,6 +134,9 @@ for(var i=1; i<12; i++) {
 }
 for(var i=1; i<12; i++) {
 	ground.push(new Platform((i*400)+200,130));
+}
+for(var i=0; i<9; i++) {
+	enemy.push(new Enemy2(280*i,290));
 }
 
 var player = new Player(200,280);
@@ -187,6 +218,9 @@ var update = function() {
 var draw = function() {
 	for(var i=0; i<ground.length; i++) {
 		ground[i].draw();
+	}
+	for(var i=0; i<enemy.length; i++) {
+		enemy[i].draw();
 	}
 	player.draw();
 };
